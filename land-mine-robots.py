@@ -17,6 +17,7 @@ from array import *
 
 # Global variables
 base_link = "https://coe892.reev.dev/lab1/rover/"
+init_flag = False
 
 class Direction(Enum):
     RIGHT = 1
@@ -46,7 +47,7 @@ class myThread (threading.Thread):
 
 # Declare Functions
 
-# TODO: Finish Implementation
+# TODO: Finish Implementation NEED TO FIX IMPLEMENTATION
 # Create file path
 def create_path_file(rover_num):
 
@@ -59,7 +60,8 @@ def create_path_file(rover_num):
 
     # 1.1 Query only specific parameters from the JSON String
     # moveSeq = response.json()['data']['moves']
-    moveSeq = "MMLMLMRMM"
+    # moveSeq = "MMLMLMRMM"
+    moveSeq = "MLLLMRRRM"
 
     # DEBUG
     print("\nRover {num}\n".format(num = rover_num))  
@@ -69,17 +71,30 @@ def create_path_file(rover_num):
         rover_char_list = rover_orientation(action)
         update_rover_path(rover_num, rover_char_list, path_list)
 
+init_flag = False
+
 # Determine rover orientation
 def rover_orientation(action):
 
-    # Initialize values
-    direction = Direction.DOWN
-    rover_ori = "V"
-    prev_rover_ori = "V"
-    move_flag = False
+    global init_flag
 
+    # Initialize values
+    if ( init_flag == False):
+        direction = Direction.DOWN
+        rover_ori = "V"
+        prev_rover_ori = "V"
+        move_flag = False
+        init_flag = True
+        print("(Inside if) init_flag ={init_flag}".format(init_flag = init_flag))
+    
+    direction = Direction.DOWN
     clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
     idx = clock_wise.index(direction)
+
+    print("init_flag ={init_flag}".format(init_flag = init_flag))
+
+    # Save previous orientation
+    prev_rover_ori = rover_ori
 
     # 3.1 move forward (M)
     if action == "M":
@@ -133,11 +148,8 @@ def rover_orientation(action):
         elif direction.name == "RIGHT":
             rover_ori = "^"
 
-    # Save previous orientation
-    prev_rover_ori = rover_ori
-
     # DEBUG
-    print("Move: {move}. Direction: {name}, Value: {value}. Rover Orientation: {rover_ori}".format( move = action, name = direction.name, value = direction.value, rover_ori = rover_ori) )
+    print("\nMove: {move}. Direction: {name}, Move Flag: {move_flag}. Rover Orientation: {rover_ori}, Previous Rover Orientation: {prev_rover_ori}".format( move = action, name = direction.name, move_flag = move_flag, rover_ori = rover_ori, prev_rover_ori = prev_rover_ori) )
 
     return rover_ori, prev_rover_ori, move_flag
 
@@ -180,7 +192,7 @@ def read_map_data(text_file):
 def init_rover_path(rover_num):
 
      # create file & save each respective rover data
-    dir_path = 'rover-data'
+    dir_path = "rover-data"
     file_name = "path_" + str(rover_num) + ".txt"
     file_path = os.path.join(dir_path, file_name)
 
@@ -303,7 +315,8 @@ print("Exiting Main Thread")
 
 
 # Part 1: Sequential Program
-create_path_file(1)
+for i in range(1, 2):
+    create_path_file(i)
 
 # Part 2: Parallel Program
 # for i in range(1, 11):
