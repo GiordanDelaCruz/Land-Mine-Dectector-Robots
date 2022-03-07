@@ -1,42 +1,38 @@
-import threading
-import time
+# Python 3 code to demonstrate
+# SHA hash algorithms.
+  
+from ast import Str
+import hashlib
+  
+# Create a list of strings
+str_list = []
 
-class myThread (threading.Thread):
-   def __init__(self, threadID, name, counter):
-      threading.Thread.__init__(self)
-      self.threadID = threadID
-      self.name = name
-      self.counter = counter
-   def run(self):
-      print("Starting " + self.name)
-      # Get lock to synchronize threads
-      threadLock.acquire()
-      print_time(self.name, self.counter, 3)
-      # Free lock to release next thread
-      threadLock.release()
+# Read file to get pins
+with open("mines.txt") as fp:
+    Lines = fp.readlines() 
 
-def print_time(threadName, delay, counter):
-   while counter:
-      time.sleep(delay)
-      print("%s: %s" % (threadName, time.ctime(time.time())) )
-      counter -= 1
+    for line in Lines:
+       str_list.append(line)
+      
+print(str_list)
 
-threadLock = threading.Lock()
-threads = []
 
-# Create new threads
-thread1 = myThread(1, "Thread-1", 1)
-thread2 = myThread(2, "Thread-2", 2)
+# Initializing string
+for temp_key in str_list:
 
-# Start new Threads
-thread1.start()
-thread2.start()
+   while True:
 
-# Add threads to thread list
-threads.append(thread1)
-threads.append(thread2)
+      # Encoding str using encode(), then sending to SHA256()
+      output = hashlib.sha256(temp_key.encode())
+      # print( output.hexdigest()[0])
 
-# Wait for all threads to complete
-for t in threads:
-    t.join()
-print("Exiting Main Thread")
+      # Determining if hash value starts at 0
+      if( output.hexdigest()[0] == "0"):
+         result = output
+
+         # Printing the equivalent hexadecimal value.
+         print("The hexadecimal equivalent of SHA256 is : ")
+         print(result.hexdigest())
+         break
+      temp_key += "1"
+   
