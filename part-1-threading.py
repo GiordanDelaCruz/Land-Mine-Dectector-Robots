@@ -1,4 +1,5 @@
 from enum import Enum
+from threading import Thread
 import requests
 import json
 import time
@@ -14,7 +15,7 @@ class Direction(Enum):
     
 class Rover:
 
-    # __int__ function
+    # __init__ function
     def __init__(self, number):
         self.rover_number = number #rover number
         self.move_sequence = self.get_rover_moves() #save rover's sequence of moves
@@ -167,11 +168,22 @@ class Rover:
 # Main function
 def main():
     start = time.time()
-    for i in range(1,11):
-        Rover(i)
+    threads = []
+  
+    for i in range(1,10):
+        thread = "thread{}".format(i)
+        temp_arg = '{}'.format(i)
+        locals()[thread] = Thread(target=Rover, args=('{}').format(temp_arg))
+        threads.append(locals()[thread])
+    t10 = Thread(target=Rover, args=('10',)) #thread 10 had to implemented seperately as it needed the "," or would give positional argument errors
+    threads.append(t10)
+    for i in threads:
+        i.start()
+    for t in threads:
+        t.join()
     end = time.time()
     print("************************************************************")
-    print("*                       Sequential                         *")
+    print("*                        Threading                         *")
     print("************************************************************\n")
     print("The computation time was: ", (end-start), "seconds\n")
 
